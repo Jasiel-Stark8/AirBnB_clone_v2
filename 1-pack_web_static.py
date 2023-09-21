@@ -15,5 +15,5 @@ def do_pack():
 
     # Return the archive path if successful, otherwise None
     if result.failed:
-        local("Failed to create archive")
+        return None
     return archive_path
