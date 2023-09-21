@@ -29,3 +29,5 @@ sudo sed -i "26i \\\tlocation /hbnb_static/ {\n\t\talias /data/web_static/curren
 
 # Restart Nginx to apply changes
 sudo service nginx restart
+
+Setup to Deploy Webstatic
