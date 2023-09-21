@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Fabric script to generate a .tgz archive from the contents of web_static"""
+
 from fabric.api import local
 from datetime import datetime
 
@@ -15,5 +16,5 @@ def do_pack():
 
     # Return the archive path if successful, otherwise None
     if result.failed:
-        return None
+        local("Failed to create archive")
     return archive_path
