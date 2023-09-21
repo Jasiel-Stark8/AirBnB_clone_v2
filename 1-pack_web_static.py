@@ -17,6 +17,6 @@ def do_pack():
     result = local("tar -czvf {} web_static".format(archive_path))
 
     # Return the archive path if successful, otherwise None
-    if result.failed:
+    if result.return_code != 0:
         local("Failed to create archive")
     return archive_path
