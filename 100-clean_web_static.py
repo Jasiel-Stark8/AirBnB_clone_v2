@@ -10,7 +10,7 @@ from datetime import datetime
 from fabric.api import *
 
 # Set the host IP addresses for 251279-web-01 && 251279-web-02 & authenticate
-env.hosts = ['ubuntu@18.204.5.218', 'ubuntu@100.26.218.215'] # Explicitly add ubuntu@<ip_Address>  --strick_Auth
+env.hosts = ['ubuntu@18.204.5.218', 'ubuntu@54.175.134.168'] # Explicitly add ubuntu@<ip_Address>  --strick_Auth
 env.user = "ubuntu"
 env.key_filename = '/root/.ssh/id_rsa' # Authorization key
 
