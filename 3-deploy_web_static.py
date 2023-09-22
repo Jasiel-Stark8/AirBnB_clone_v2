@@ -1,38 +1,38 @@
 #!/usr/bin/python3
 """
-This Fabric script creates & distributes the web_Static archive to \
-251279-web-01 ubuntu@18.204.5.218 & 251279-web-02 ubuntu@100.26.218.215 \
-using the function deploy
+This fabfile distributes an archive to my web servers
 """
 
 import os
-from datetime import datetime
 from fabric.api import *
+from datetime import datetime
 
-# Set the host IP addresses for 251279-web-01 && 251279-web-02
-env.hosts = ['ubuntu@18.204.5.218', 'ubuntu@100.26.218.215'] # Explicitly add ubuntu@<ip_Address>  --strick_Auth
+
+# Set the host IP addresses for web-01 && web-02
+env.hosts = ['18.234.105.167', '100.25.222.179']
 env.user = "ubuntu"
-env.key_filename = '/root/.ssh/id_rsa' # Authorization key
+
 
 def do_pack():
-    """Generates .tgz archive from the contents of the web_static folder."""
-    # Current date and time object
-    time_stamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    """Create a tar gzipped archive of the directory web_static."""
+    # obtain the current date and time
+    now = datetime.now().strftime("%Y%m%d%H%M%S")
 
-    # Define path where archive will be saved
-    archive_path = "versions/web_static_{}.tgz".format(time_stamp)
+    # Construct path where archive will be saved
+    archive_path = "versions/web_static_{}.tgz".format(now)
 
-    # Create the versions directory if it doesn't exist
+    # use fabric function to create directory if it doesn't exist
     local("mkdir -p versions")
 
     # Use tar command to create a compresses archive
-    result = local("tar -cvzf {} web_static".format(archive_path))
+    archived = local("tar -cvzf {} web_static".format(archive_path))
 
-    # Return the archive path if successful, else None (Check archive status)
-    if result.return_code != 0:
+    # Check archive Creation Status
+    if archived.return_code != 0:
         return None
     else:
         return archive_path
+
 
 def do_deploy(archive_path):
     '''use os module to check for valid file path'''
@@ -53,14 +53,12 @@ def do_deploy(archive_path):
         return True
     return False
 
+
 def deploy():
-    """Creates and distributes an archive to web servers."""
-    # Call the do_pack() function
+    """
+    Create and archive and get its path
+    """
     archive_path = do_pack()
-
-    # Check if archive was created
-    if not archive_path:
+    if archive_path is None:
         return False
-
-    # Call the do_deploy() function
     return do_deploy(archive_path)
