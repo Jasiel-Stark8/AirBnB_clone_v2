@@ -65,17 +65,25 @@ def deploy():
     return do_deploy(archive_path)
 
 def do_clean(number=0):
-    """Deletes out-of-date archives."""
-    number = int(number)
-
-    # If number is 0 or 1, only keep the most recent archive
-    if number == 0 or number == 1:
-        number = 1
+    """Deletes out-of-date archives of the static files.
+    Args:
+        number (Any): The number of archives to keep.
+    """
+    archives = os.listdir('versions/')
+    archives.sort(reverse=True)
+    start = int(number)
+    if not start:
+        start += 1
+    if start < len(archives):
+        archives = archives[start:]
     else:
-        number += 1  # to keep the exact number of archives
-
-    # Delete unnecessary archives in the versions folder
-    local("cd versions; ls -t | tail -n +{} | xargs rm -rf".format(number))
-
-    # Delete unnecessary archives in the /data/web_static/releases folder on both web servers
-    run("cd /data/web_static/releases; ls -t | tail -n +{} | xargs rm -rf".format(number))
+        archives = []
+    for archive in archives:
+        os.unlink('versions/{}'.format(archive))
+    cmd_parts = [
+        "rm -rf $(",
+        "find /data/web_static/releases/ -maxdepth 1 -type d -iregex",
+        " '/data/web_static/releases/web_static_.*'",
+        " | sort -r | tr '\\n' ' ' | cut -d ' ' -f{}-)".format(start + 1)
+    ]
+    run(''.join(cmd_parts))
