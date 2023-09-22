@@ -47,7 +47,8 @@ def do_deploy(archive_path):
 
         # Uncompress the archive to the folder on the web server
         run("mkdir -p /data/web_static/releases/{}/".format(without_extension))
-        run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".format(archive_name, without_extension))
+        run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/ \
+            ".format(archive_name, without_extension))
 
         # Delete the archive from the web server
         run("rm /tmp/{}".format(archive_name))
@@ -56,7 +57,8 @@ def do_deploy(archive_path):
         run("rm -rf /data/web_static/current")
 
         # Create a new symbolic link on the web server
-        run("ln -s /data/web_static/releases/{}/ /data/web_static/current".format(without_extension))
+        run("ln -s /data/web_static/releases/{}/ /data/web_static/current \
+            ".format(without_extension))
 
         return True
     except:
