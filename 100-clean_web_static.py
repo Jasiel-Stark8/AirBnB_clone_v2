@@ -12,6 +12,7 @@ from fabric.api import *
 # Declare web servers
 env.hosts = ['18.204.5.218', '100.26.218.215']
 env.user = "ubuntu"
+env.key_filename = '/root/.ssh/id_rsa' # Authorization key
 
 def do_pack():
     """Generates .tgz archive from the contents of the web_static folder."""

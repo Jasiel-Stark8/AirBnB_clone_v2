@@ -11,6 +11,7 @@ from datetime import datetime
 # Set the host IP addresses for 251279-web-01 && 251279-web-02
 env.hosts = ['18.204.5.218', '100.26.218.215']
 env.user = "ubuntu"
+env.key_filename = '/root/.ssh/id_rsa' # Authorization key
 
 def do_pack():
     """Generates .tgz archive from the contents of the web_static folder."""
