@@ -12,23 +12,22 @@ from datetime import datetime
 env.hosts = ['18.204.5.218', '100.26.218.215']
 env.user = "ubuntu"
 
-
 def do_pack():
-    """Create a tar gzipped archive of the directory web_static."""
-    # obtain the current date and time
-    now = datetime.now().strftime("%Y%m%d%H%M%S")
+    """Generates .tgz archive from the contents of the web_static folder."""
+    # Current date and time object
+    time_stamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
-    # Construct path where archive will be saved
-    archive_path = "versions/web_static_{}.tgz".format(now)
+    # Define path where archive will be saved
+    archive_path = "versions/web_static_{}.tgz".format(time_stamp)
 
-    # use fabric function to create directory if it doesn't exist
+    # Create the versions directory if it doesn't exist
     local("mkdir -p versions")
 
     # Use tar command to create a compresses archive
-    archived = local("tar -cvzf {} web_static".format(archive_path))
+    result = local("tar -cvzf {} web_static".format(archive_path))
 
-    # Check archive Creation Status
-    if archived.return_code != 0:
+    # Return the archive path if successful, else None (Check archive status)
+    if result.return_code != 0:
         return None
     else:
         return archive_path
