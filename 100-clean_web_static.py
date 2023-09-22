@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
 This Fabric script creates & distributes the web_Static archive to \
-251279-web-01 ubuntu@18.204.5.218 & 251279-web-02 ubuntu@100.26.218.215 \
+251279-web-01 ubuntu@18.204.5.218 & 251279-web-02 ubuntu@54.175.134.168 \
 using the function deploy
 """
 
