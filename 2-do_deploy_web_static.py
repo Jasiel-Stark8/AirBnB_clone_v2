@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 """
-This Fabric script deploys the web_Static archive to \
-251279-web-01 ubuntu@18.204.5.218 & 251279-web-02 ubuntu@100.26.218.215
+This fabfile distributes an archive to my web servers
 """
 
 import os
-from datetime import datetime
 from fabric.api import *
+from datetime import datetime
 
-# Declare web servers
+
+# Set the host IP addresses for 251279-web-01 && 251279-web-02
 env.hosts = ['18.204.5.218', '100.26.218.215']
 env.user = "ubuntu"
 
@@ -31,6 +31,7 @@ def do_pack():
         return None
     else:
         return archive_path
+
 
 def do_deploy(archive_path):
     '''use os module to check for valid file path'''
