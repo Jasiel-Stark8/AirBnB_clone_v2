@@ -1,54 +1,40 @@
 #!/usr/bin/python3
-"""
-This fabfile distributes an archive to my web servers
-"""
-
-import os
+"""2-do_deploy_web_static.py module"""
 from fabric.api import *
-from datetime import datetime
+from os.path import isfile
 
-
-# Set the host IP addresses for 251279-web-01 && 251279-web-02
-env.hosts = ['ubuntu@18.204.5.218', 'ubuntu@54.175.134.168'] # Explicitly add ubuntu@<ip_Address>  --strick_Auth
-env.user = "ubuntu"
-env.key_filename = '/root/.ssh/id_rsa' # Authorization key
-
-def do_pack():
-    """Generates .tgz archive from the contents of the web_static folder."""
-    # Current date and time object
-    time_stamp = datetime.now().strftime("%Y%m%d%H%M%S")
-
-    # Define path where archive will be saved
-    archive_path = "versions/web_static_{}.tgz".format(time_stamp)
-
-    # Create the versions directory if it doesn't exist
-    local("mkdir -p versions")
-
-    # Use tar command to create a compresses archive
-    result = local("tar -cvzf {} web_static".format(archive_path))
-
-    # Return the archive path if successful, else None (Check archive status)
-    if result.return_code != 0:
-        return None
-    else:
-        return archive_path
+prv_ky_pth = "my_ssh_private_key"
+env.user = ['ubuntu']
+env.hosts = ["ubuntu@18.204.5.218", "ubuntu@54.175.134.168"]
+env.key_filename = prv_ky_pth
 
 
 def do_deploy(archive_path):
-    '''use os module to check for valid file path'''
-    if os.path.exists(archive_path):
-        archive = archive_path.split('/')[1]
-        a_path = "/tmp/{}".format(archive)
-        folder = archive.split('.')[0]
-        f_path = "/data/web_static/releases/{}/".format(folder)
+    """Distributes an archive to your web servers
+    archive_path: Path to archive
+    Returns: True if all operations done sucessful, otherwise False
+    """
+    if isfile(archive_path) is False:
+        return False
 
-        put(archive_path, a_path)
-        run("mkdir -p {}".format(f_path))
-        run("tar -xzf {} -C {}".format(a_path, f_path))
-        run("rm {}".format(a_path))
-        run("mv -f {}web_static/* {}".format(f_path, f_path))
-        run("rm -rf {}web_static".format(f_path))
+    achv_tgz = archive_path.split('/')[1]
+    achv = archive_path.split('/')[1].split('.')[0]
+
+    try:
+        put(archive_path, "/tmp/")
+        run("mkdir -p /data/web_static/releases/{}/".
+            format(achv))
+        run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".
+            format(achv_tgz, achv))
+        run("rm /tmp/{}".format(achv_tgz))
+        run("mv /data/web_static/releases/{}/web_static/* \
+            /data/web_static/releases/{}/".format(achv, achv))
+        run("rm -rf /data/web_static/releases/{}/web_static".
+            format(achv))
         run("rm -rf /data/web_static/current")
-        run("ln -s {} /data/web_static/current".format(f_path))
+        run("ln -sf /data/web_static/releases/{}/ \
+            /data/web_static/current".format(achv))
+        print("New version deployed!")
         return True
-    return False
+    except Exception:
+        return False

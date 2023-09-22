@@ -1,65 +1,66 @@
 #!/usr/bin/python3
-"""
-This fabfile distributes an archive to my web servers
-"""
-
-import os
-from fabric.api import *
+"""3-deploy_web_static module"""
 from datetime import datetime
+from fabric.api import *
+from os.path import isfile
 
-
-# Set the host IP addresses for web-01 && web-02
-env.hosts = ['ubuntu@18.204.5.218', 'ubuntu@54.175.134.168'] # Explicitly add ubuntu@<ip_Address>  --strick_Auth
-env.user = "ubuntu"
-env.key_filename = '/root/.ssh/id_rsa' # Authorization key
+prv_ky_pth = "my_ssh_private_key"
+env.user = ['ubuntu']
+env.hosts = ["ubuntu@18.204.5.218", "ubuntu@54.175.134.168"]
+env.key_filename = prv_ky_pth
 
 
 def do_pack():
-    """Create a tar gzipped archive of the directory web_static."""
-    # obtain the current date and time
-    now = datetime.now().strftime("%Y%m%d%H%M%S")
+    """Generates .tgz archive from web_static dir
+    Returns: Archive path, otherwise False
+    """
+    fmt = datetime.now().strftime("%Y%m%d%H%M%S")
 
-    # Construct path where archive will be saved
-    archive_path = "versions/web_static_{}.tgz".format(now)
-
-    # use fabric function to create directory if it doesn't exist
     local("mkdir -p versions")
+    local("tar -cvzf versions/web_static_{}.tgz web_static".format(fmt))
 
-    # Use tar command to create a compresses archive
-    archived = local("tar -cvzf {} web_static".format(archive_path))
-
-    # Check archive Creation Status
-    if archived.return_code != 0:
+    try:
+        return ("versions/web_static_{}.tgz".format(fmt))
+    except Exception:
         return None
-    else:
-        return archive_path
 
 
 def do_deploy(archive_path):
-    '''use os module to check for valid file path'''
-    if os.path.exists(archive_path):
-        archive = archive_path.split('/')[1]
-        a_path = "/tmp/{}".format(archive)
-        folder = archive.split('.')[0]
-        f_path = "/data/web_static/releases/{}/".format(folder)
+    """Distributes an archive to your web servers
+    archive_path: Path to archive
+    Returns: True if all operations done sucessful, otherwise False
+    """
+    if isfile(archive_path) is False:
+        return False
 
-        put(archive_path, a_path)
-        run("mkdir -p {}".format(f_path))
-        run("tar -xzf {} -C {}".format(a_path, f_path))
-        run("rm {}".format(a_path))
-        run("mv -f {}web_static/* {}".format(f_path, f_path))
-        run("rm -rf {}web_static".format(f_path))
+    achv_tgz = archive_path.split('/')[1]
+    achv = archive_path.split('/')[1].split('.')[0]
+
+    try:
+        put(archive_path, "/tmp/")
+        run("mkdir -p /data/web_static/releases/{}/".
+            format(achv))
+        run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".
+            format(achv_tgz, achv))
+        run("rm /tmp/{}".format(achv_tgz))
+        run("mv /data/web_static/releases/{}/web_static/* \
+            /data/web_static/releases/{}/".format(achv, achv))
+        run("rm -rf /data/web_static/releases/{}/web_static".
+            format(achv))
         run("rm -rf /data/web_static/current")
-        run("ln -s {} /data/web_static/current".format(f_path))
+        run("ln -sf /data/web_static/releases/{}/ \
+            /data/web_static/current".format(achv))
+        print("New version deployed!")
         return True
-    return False
+    except Exception:
+        return False
 
 
 def deploy():
+    """Creates & distributes an archive to your web servers
+    Returns: Value of do_deploy, False if no archive created
     """
-    Create and archive and get its path
-    """
-    archive_path = do_pack()
-    if archive_path is None:
+    achv_pth = do_pack()
+    if achv_pth is None:
         return False
-    return do_deploy(archive_path)
+    return do_deploy(achv_pth)

@@ -1,90 +1,85 @@
 #!/usr/bin/python3
-"""
-This Fabric script creates & distributes the web_Static archive to \
-251279-web-01 ubuntu@18.204.5.218 & 251279-web-02 ubuntu@54.175.134.168 \
-using the function deploy
-"""
-
-import os
+"""100-clean_web_static module"""
 from datetime import datetime
 from fabric.api import *
+from os.path import isfile
 
-# Set the host IP addresses for 251279-web-01 && 251279-web-02 & authenticate
-env.hosts = ['ubuntu@18.204.5.218', 'ubuntu@54.175.134.168'] # Explicitly add ubuntu@<ip_Address>  --strick_Auth
-env.user = "ubuntu"
-env.key_filename = '/root/.ssh/id_rsa' # Authorization key
+prv_ky_pth = "my_ssh_private_key"
+env.user = ['ubuntu']
+env.hosts = ["ubuntu@18.204.5.218", "ubuntu@54.175.134.168"]
+env.key_filename = prv_ky_pth
+
 
 def do_pack():
-    """Generates .tgz archive from the contents of the web_static folder."""
-    # Current date and time object
-    time_stamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    """Generates .tgz archive from web_static dir
+    Returns: Archive path, otherwise False
+    """
+    fmt = datetime.now().strftime("%Y%m%d%H%M%S")
 
-    # Define path where archive will be saved
-    archive_path = "versions/web_static_{}.tgz".format(time_stamp)
-
-    # Create the versions directory if it doesn't exist
     local("mkdir -p versions")
+    local("tar -cvzf versions/web_static_{}.tgz web_static".format(fmt))
 
-    # Use tar command to create a compresses archive
-    result = local("tar -cvzf {} web_static".format(archive_path))
-
-    # Return the archive path if successful, else None (Check archive status)
-    if result.return_code != 0:
+    try:
+        return ("versions/web_static_{}.tgz".format(fmt))
+    except Exception:
         return None
-    else:
-        return archive_path
+
 
 def do_deploy(archive_path):
-    '''use os module to check for valid file path'''
-    if os.path.exists(archive_path):
-        archive = archive_path.split('/')[1]
-        a_path = "/tmp/{}".format(archive)
-        folder = archive.split('.')[0]
-        f_path = "/data/web_static/releases/{}/".format(folder)
-
-        put(archive_path, a_path)
-        run("mkdir -p {}".format(f_path))
-        run("tar -xzf {} -C {}".format(a_path, f_path))
-        run("rm {}".format(a_path))
-        run("mv -f {}web_static/* {}".format(f_path, f_path))
-        run("rm -rf {}web_static".format(f_path))
-        run("rm -rf /data/web_static/current")
-        run("ln -s {} /data/web_static/current".format(f_path))
-        return True
-    return False
-
-def deploy():
-    """Creates and distributes an archive to web servers."""
-    # Call the do_pack() function
-    archive_path = do_pack()
-
-    # Check if archive was created
-    if not archive_path:
+    """Distributes an archive to your web servers
+    archive_path: Path to archive
+    Returns: True if all operations done sucessful, otherwise False
+    """
+    if isfile(archive_path) is False:
         return False
 
-    # Call the do_deploy() function
-    return do_deploy(archive_path)
+    achv_tgz = archive_path.split('/')[1]
+    achv = archive_path.split('/')[1].split('.')[0]
+
+    try:
+        put(archive_path, "/tmp/")
+        run("mkdir -p /data/web_static/releases/{}/".
+            format(achv))
+        run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".
+            format(achv_tgz, achv))
+        run("rm /tmp/{}".format(achv_tgz))
+        run("mv /data/web_static/releases/{}/web_static/* \
+            /data/web_static/releases/{}/".format(achv, achv))
+        run("rm -rf /data/web_static/releases/{}/web_static".
+            format(achv))
+        run("rm -rf /data/web_static/current")
+        run("ln -sf /data/web_static/releases/{}/ \
+            /data/web_static/current".format(achv))
+        print("New version deployed!")
+        return True
+    except Exception:
+        return False
+
+
+def deploy():
+    """Creates & distributes an archive to your web servers
+    Returns: Value of do_deploy, False if no archive created
+    """
+    achv_pth = do_pack()
+    if achv_pth is None:
+        return False
+    return do_deploy(achv_pth)
+
 
 def do_clean(number=0):
-    """Deletes out-of-date archives of the static files.
-    Args:
-        number (Any): The number of archives to keep.
+    """Deletes out-of-date archives
+    number: no. of the archives to keep
     """
-    archives = os.listdir('versions/')
-    archives.sort(reverse=True)
-    start = int(number)
-    if not start:
-        start += 1
-    if start < len(archives):
-        archives = archives[start:]
-    else:
-        archives = []
-    for archive in archives:
-        os.unlink('versions/{}'.format(archive))
-    cmd_parts = [
-        "rm -rf $(",
-        "find /data/web_static/releases/ -maxdepth 1 -type d -iregex",
-        " '/data/web_static/releases/web_static_.*'",
-        " | sort -r | tr '\\n' ' ' | cut -d ' ' -f{}-)".format(start + 1)
-    ]
-    run(''.join(cmd_parts))
+    files = local("ls -1t versions", capture=True)
+    file_names = files.split("\n")
+    n = int(number)
+    if n in (0, 1):
+        n = 1
+    for i in file_names[n:]:
+        local("rm versions/{}".format(i))
+    dir_wbsvr = run("ls -1t /data/web_static/releases")
+    dir_wbsvr_nms = dir_wbsvr.split("\n")
+    for i in dir_wbsvr_nms[n:]:
+        if i is 'test':
+            continue
+        run("rm -rf /data/web_static/releases/{}".format(i))
