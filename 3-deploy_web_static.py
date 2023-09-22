@@ -9,8 +9,8 @@ import os
 from datetime import datetime
 from fabric.api import *
 
-# Declare web servers
-env.hosts = ['18.204.5.218', '100.26.218.215']
+# Set the host IP addresses for 251279-web-01 && 251279-web-02
+env.hosts = ['ubuntu@18.204.5.218', 'ubuntu@100.26.218.215']
 env.user = "ubuntu"
 env.key_filename = '/root/.ssh/id_rsa' # Authorization key
 
