@@ -8,8 +8,8 @@ from fabric.api import *
 from datetime import datetime
 
 
-# Set the host IP addresses for web-01 && web-02
-env.hosts = ['18.234.105.167', '100.25.222.179']
+# Set the host IP addresses for 251279-web-01 && 251279-web-02
+env.hosts = ['18.204.5.218', '100.26.218.215']
 env.user = "ubuntu"
 
 
