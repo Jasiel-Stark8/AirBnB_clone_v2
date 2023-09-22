@@ -4,8 +4,9 @@ This Fabric script deploys the web_Static archive to \
 251279-web-01 ubuntu@18.204.5.218 & 251279-web-02 ubuntu@100.26.218.215
 """
 
-from fabric.api import local
+import os
 from datetime import datetime
+from fabric.api import local, put, run, env
 
 # Declare web servers
 env.hosts = ['18.204.5.218', '100.26.218.215']
