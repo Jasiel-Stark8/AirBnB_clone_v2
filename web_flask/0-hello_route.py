@@ -1,15 +1,18 @@
 #!/usr/bin/python3
-"""0. Hello Flask!"""
+"""Start Flask web application"""
+
 from flask import Flask
 
 app = Flask(__name__)
-app.url_map.strict_slashes = False
 
 
-@app.route('/')
+@app.route('/', strict_slashes=False)
 def hello_hbnb():
-    """Display “Hello HBNB!”"""
-    return 'Hello HBNB!'
+    """
+    Routing to root, strict_slashes ensure
+    the URL works when it ends both with or without the /
+    """
+    return "Hello HBNB!"
 
 
 if __name__ == "__main__":
