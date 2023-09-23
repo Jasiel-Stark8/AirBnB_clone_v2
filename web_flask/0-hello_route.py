@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """This script starts a Flask Web Application"""
-# Imprt Flask
+# Import Flask
 from flask import Flask
 
 # Initialize Flask app
