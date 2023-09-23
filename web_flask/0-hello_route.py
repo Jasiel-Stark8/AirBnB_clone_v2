@@ -5,13 +5,13 @@ from flask import Flask
 
 # Initialize Flask app
 app = Flask(__name__)
-app.url_map.strict_slashes = False
 
 
 # Define routes and return static content
-@app.route('/')
+@app.route('/', strict_slashes=False)
 def hello_hbnb():
-    return "Hello HBNB"
+    """Page is served with or without '/' - returns static content"""
+    return "Hello HBNB!"
 
 
 if __name__ == '__main__':
