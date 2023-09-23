@@ -5,10 +5,12 @@ from flask import Flask
 
 app = Flask(__name__)
 
-
 @app.route('/', strict_slashes=False)
 def hello_hbnb():
-    """Page is served with or without '/' - returns static content"""
+    """
+    route should match both trailing slash and no trailing slash'/' \
+    - returns static content
+    """
     return "Hello HBNB!"
 
 @app.route('/hbnb', strict_slashes=False)
