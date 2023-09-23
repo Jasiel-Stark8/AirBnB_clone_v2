@@ -5,7 +5,7 @@ from os.path import isfile
 
 prv_ky_pth = "my_ssh_private_key"
 env.user = ['ubuntu']
-env.hosts = ["ubuntu@100.25.190.203", "ubuntu@54.175.134.168"]
+env.hosts = ["ubuntu@100.25.190.203"]
 env.key_filename = prv_ky_pth
 
 
