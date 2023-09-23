@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""This script serves a Flask Web Application"""
+"""This script serves a Flask Web Application with 2 routes"""
 
 from flask import Flask
 
