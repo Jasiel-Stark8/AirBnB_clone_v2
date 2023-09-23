@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""This script starts a Flask Web Application"""
+"""This script serves a Flask Web Application"""
 # Import Flask
 from flask import Flask
 
 # Initialize Flask app
 app = Flask(__name__)
+app.url_map.strict_slashes = False
+
 
 # Define routes and return static content
-@app.route('/', strict_slashes=False)
-def hello():
+@app.route('/')
+def hello_hbnb():
     return "Hello HBNB"
 
 
