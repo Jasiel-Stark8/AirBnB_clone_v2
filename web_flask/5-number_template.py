@@ -49,7 +49,7 @@ def number(n):
 
 
 @app.route('/number_template/<int:n>', strict_slashes=False)
-def display_page_number(n):
+def display_page_number(n=None):
     """Render number template"""
     try:
         if not isinstance(n, int):
