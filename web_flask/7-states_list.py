@@ -1,6 +1,12 @@
 #!/usr/bin/python3
 """This scripts starts a Flask Web Application"""
 
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+
 from flask import Flask, render_template
 from models import storage
 from models.state import State
