@@ -61,18 +61,12 @@ def display_page_number(n):
 
 
 @app.route('/number_odd_or_even/<int:n>', strict_slashes=False)
-def odd_or_even(n=None):
+def odd_or_even(n):
     """n=n & parity=parity | means the placeholder in the template \
     is to reflect the value of variable in the route file or another python file
     """
-    try:
-        if not isinstance(n, int):
-            return None
-        else:
-            parity = 'even' if n % 2 == 0 else 'odd'
-            return render_template('6-number_odd_or_even.html', n=n, parity=parity)
-    except TypeError:
-        return None
+    parity = 'even' if n % 2 == 0 else 'odd'
+    return render_template('6-number_odd_or_even.html', n=n, parity=parity)
 
 
 if __name__ == "__main__":
