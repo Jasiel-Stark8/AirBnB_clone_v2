@@ -62,7 +62,9 @@ def display_page_number(n):
 
 @app.route('/number_odd_or_even/<int:n>', strict_slashes=False)
 def odd_or_even(n=None):
-    """Check even | odd"""
+    """n=n | means the placeholder in the template \
+    is to reflect the value of variable in the route file or another python file
+    """
     return render_template('6-number_odd_or_even.html', n=n)
 
 
