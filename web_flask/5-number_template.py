@@ -53,7 +53,7 @@ def number(n):
 def display_page_number(n):
     """Render number template"""
     try:
-        if not isinstance(n, int) or n is None:
+        if not isinstance(n, int):
             return None
         else:
             return render_template('5-number.html', n=n)
