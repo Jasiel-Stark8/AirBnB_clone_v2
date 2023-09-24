@@ -1,7 +1,8 @@
 #!/usr/bin/python3
-"""This script serves Flask Web Application with 4 routes"""
+"""This script serves a Flask Web Application with 3 routes"""
 
 from flask import Flask
+
 app = Flask(__name__)
 
 
@@ -16,18 +17,20 @@ def hello_hbnb():
 
 @app.route('/hbnb', strict_slashes=False)
 def hbnb():
-    """Display static text in new route"""
+    """Display static content in new route"""
     return "HBNB"
 
 
 @app.route('/c/<text>', strict_slashes=False)
 def c_text(text):
-    text = text.replace("_", " ")
+    """Replace text in c route"""
+    text = text.replace('_', ' ')
     return f"C {text}"
 
 
 @app.route('/python/<text>', strict_slashes=False)
 def python_text(text):
+    """Replace text in python route"""
     text = text.replace("_", " ")
     return f"Python {text}"
 
