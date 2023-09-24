@@ -38,6 +38,7 @@ def python_text(text):
 
 @app.route('/number/<int:n>', strict_slashes=False)
 def number(n):
+    """Display number only if it's an integer"""
     try:
         if not isinstance(n, int):
             return None
@@ -49,6 +50,7 @@ def number(n):
 
 @app.route('/number_template/<int:n>', strict_slashes=False)
 def display_page_number(n):
+    """Render number template"""
     try:
         if not isinstance(n, int):
             return None
