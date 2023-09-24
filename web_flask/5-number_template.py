@@ -48,11 +48,12 @@ def number(n):
         return None
 
 
+@app.route('/number/<int:n>', defaults={'n': None}, strict_slashes=False)
 @app.route('/number_template/<int:n>', strict_slashes=False)
-def display_page_number(n=None):
+def display_page_number(n):
     """Render number template"""
     try:
-        if not isinstance(n, int):
+        if not isinstance(n, int) or n is None:
             return None
         else:
             return render_template('5-number.html', n=n)
