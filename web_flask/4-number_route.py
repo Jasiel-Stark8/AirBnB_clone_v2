@@ -42,7 +42,7 @@ def number(n):
         if not isinstance(n, int):
             return None
         else:
-            return "{}".format(n)
+            return "{} is a number".format(n)
     except TypeError:
         return None
 
