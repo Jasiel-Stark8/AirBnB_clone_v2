@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""This script serves a Flask Web Application with 3 routes"""
+"""This script serves a Flask Web Application with multiple routes"""
 
 from flask import Flask, render_template
 
