@@ -18,7 +18,7 @@ def display_cities_by_states():
 
 
 @app.teardown_appcontext
-def teardown_db(exception):
+def teardown_db(self):
     """Terminate current Database Session"""
     storage.close()
 
